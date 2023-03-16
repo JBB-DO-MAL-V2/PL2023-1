@@ -11,16 +11,16 @@ def coin_balance(coin: str):
   if coin == "5c":
     return 0.05
   elif coin == "10c":
-    return 0.10
+    return 0.1
   elif coin == "20c":
-    return 0.20
+    return 0.2
   elif coin == "50c":
-    return 0.50
+    return 0.5
   elif coin == "1e":
-    return 1.00
+    return 1
   elif coin == "2e":
-    return 2.00
-  return 0.00
+    return 2
+  return 0
 
 def add_balance(coins: str):
   balance = 0.0
@@ -40,8 +40,8 @@ def make_call(number: str, balance: float):
   if re.match(r"(601|641)\d+",number) != None: # blocked numbers
     print_res("Esse número não é permitido neste telefone. Queira discar novo número!")
   elif re.match(r"(00)\d+",number) != None: # international line
-    if balance >= 1.50:
-      balance -= 1.50
+    if balance >= 1.5:
+      balance -= 1.5
     else:
       print_res("Não possui saldo suficiente. Queira inserir mais moedas e discar novamente!")
   elif re.match(r"(2)\d+",number) != None and len(number) == 9: # national line
@@ -50,10 +50,10 @@ def make_call(number: str, balance: float):
     else:
       print_res("Não possui saldo suficiente. Queira inserir mais moedas e discar novamente!")
   elif re.match(r"(800)\d+",number) != None and len(number) == 9: # green line
-    balance -= 0.00
+    balance -= 0.0
   elif re.match(r"(808)\d+",number) != None and len(number) == 9: # blue line
-    if balance >= 0.10:  
-      balance -= 0.10
+    if balance >= 0.1:  
+      balance -= 0.1
     else:
       print_res("Não possui saldo suficiente. Queira inserir mais moedas e discar novamente!")
   else: # invalid numbers
@@ -70,46 +70,21 @@ def print_balance(balance: float):
 
 def change(balance: float, out: bool):
   map_coins = {"5c": 0, "10c": 0, "20c": 0, "50c": 0,"1e": 0, "2e": 0}
-  print(balance)
-  while balance != 0.00:
-    if balance >= 2.00:
-      map_coins["2e"] += 1
-      balance -= 2
-
-    elif balance >= 1.00:
-      map_coins["1e"] += 1
-      balance -= 1
-
-    elif balance >= 0.50:
-      map_coins["50c"] += 1
-      balance -= 0.5
-
-    elif balance >= 0.20:
-      map_coins["20c"] += 1
-      balance -= 0.2
-
-    elif balance >= 0.10:
-      map_coins["10c"] += 1
-      balance -= 0.1
-
-    elif balance >= 0.05:
-      map_coins["5c"] += 1
-      balance -= 0.05
-
-    # print(balance)
-
-  coins_change = ""
-  for k,v in map_coins.items():
-    if v != 0:
-      coins_change = coins_change + ", " + str(v) + "x" + k
-  
-  coins_change = coins_change[1:]
+  # this brings limitations because of float conflicts in python
+  # this version as a normal public phone does not accept coins below 5 cents
+  while balance > 0.05:
+    for coin in ["2e", "1e", "50c", "20c", "10c"]:
+      if balance >= coin_balance(coin):
+        map_coins[coin] += 1
+        balance -= coin_balance(coin)
+        break
 
   if out:
-    print_res("troco =" + coins_change)
+    print(f"maq: troco = {map_coins['2e']}x2e, {map_coins['1e']}x1e, {map_coins['50c']}x50c, {map_coins['20c']}x20c, {map_coins['10c']}x10c, {map_coins['5c']}x5c")
     print_res("Volte sempre!") 
   else:
     print_res("Tome os seus " + balance_splitter(balance) + " de volta!")
+    print(f"maq: {map_coins['2e']}x2e, {map_coins['1e']}x1e, {map_coins['50c']}x50c, {map_coins['20c']}x20c, {map_coins['10c']}x10c, {map_coins['5c']}x5c")
     print_res("Volte sempre!")
 
 def main():
