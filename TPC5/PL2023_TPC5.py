@@ -88,14 +88,18 @@ def change(balance: float, out: bool):
     print_res("Volte sempre!")
 
 def main():
+  states = ["LEVANTAR","POUSAR","MOEDA","T","ABORTAR"]
+  state = ""
   ins = str(input())
   balance = 0.00
   out = True
   if re.fullmatch(r"(?i:LEVANTAR)", ins):
+    state = states[0]
     print_res("Introduza moedas!")
     ins = str(input())
 
     if re.match(r"(?i:MOEDA)", ins):
+      state = states[2]
       balance += add_balance(ins)
       print_balance(balance)
 
@@ -104,14 +108,17 @@ def main():
       while re.fullmatch(r"(?i:POUSAR)", ins) == None:
         # using if statements because match is for 3.10+ python version
         if re.match(r"(?i:MOEDA)", ins):
+          state = states[2]
           balance += add_balance(ins)
           print_balance(balance)
 
         elif re.match(r"(?i:T=)", ins):
+          state = states[3]
           balance = make_call(ins, balance)
           print_balance(balance)
             
         elif re.match(r"(?i:ABORTAR)", ins):
+          state = states[-1]
           out = False
           break
 
